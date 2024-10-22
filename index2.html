@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>空军节</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .image-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .image-container img {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin: 0;
+        }
+        .music-icon {
+            transform: rotate(-90deg);
+            width: 30px;  /* 缩小图标尺寸 */
+            height: 30px; /* 缩小图标尺寸 */
+            position: fixed; /* 使其固定在屏幕上 */
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            z-index: 999; /* 保证它显示在最上层 */
+        }
+        .highlight {
+            width: 50px;
+            height: 50px;
+            background: radial-gradient(circle, rgba(255, 255, 150, 0.2) 30%, rgba(255, 255, 100, 0.6) 50%, rgba(255, 255, 255, 0.5) 80%);
+            position: absolute;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .background-image {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* 卡片框旋转 -90 度 */
+        .card-popup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-90deg); /* 旋转卡片 */
+            width: 500px;
+            display: none;
+            z-index: 100;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            text-align: center;
+            flex-grow: 1;
+            margin: 0;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* 返回按钮旋转并放置在屏幕底部 */
+        .back-button {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 100;
+            transform: rotate(-90deg); /* 按钮旋转 */
+            transform-origin: center;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 第一张图片容器 -->
+<div class="image-container" id="imageContainer">
+    <img src="./assets/空军节压缩.jpg" alt="竖屏长图" id="image">
+    <div class="highlight" id="highlight"></div>
+</div>
+
+<!-- 音乐图标，固定在屏幕右上角 -->
+<img src="./assets/音乐.png" class="music-icon" id="musicIcon" alt="音乐图标">
+
+<!-- 音频播放器 -->
+<audio id="backgroundMusic" src="./assets/music/我的战鹰绕着宝岛飞 MMO(1).wav" type="audio/wav"></audio>
+
+<!-- 背景图片容器（第二张图） -->
+<div class="background-image" id="backgroundImage">
+    <div class="highlight" id="secondHighlight" style="top: 50%; left: 50%;"></div>
+
+    <!-- 返回按钮 -->
+    <button class="btn btn-light back-button" id="backButton">返回</button>
+
+   <!-- 卡片弹出框 -->
+   <div class="card card-popup" id="cardPopup">
+    <div class="card-header">
+        <h5 class="card-title">马拉飞机建航校</h5>
+        <button class="close-button" id="closeCard">&times;</button>
+    </div>
+    <div class="card-body">
+        <p class="card-text">东北民主联军航空学校，又称“东北老航校”，是党创办的第一所航空学校，也是人民空军和新中国航空事业的“摇篮”。老航校诞生于烽火连天的解放战争时期，时时面临着敌对势力的骚扰破坏，办学条件非常艰苦。老航校创建者牢记党中央嘱托，怀着“千难万险何所惧，愿为航空献青春”的革命豪情，在冰天雪地里通过马拉人抬，搜集飞机航材、油料设备。</p>
+    </div>
+</div>
+</div>
+<script>
+    // 调整光点的位置
+    function adjustHighlightPosition() {
+        const image = document.getElementById('image');
+        const highlight = document.getElementById('highlight');
+
+        if (image.complete && image.naturalHeight !== 0) {
+            const imageRect = image.getBoundingClientRect();
+
+            const topPercentage = 0.913;
+            const leftPercentage = 0.065;
+
+            highlight.style.top = (imageRect.height * topPercentage) + 'px';
+            highlight.style.left = (imageRect.width * leftPercentage) + 'px';
+        }
+    }
+
+    // 切换到背景图
+    document.getElementById('highlight').addEventListener('click', function () {
+        const backgroundImage = document.getElementById('backgroundImage');
+        backgroundImage.style.backgroundImage = "url('./assets/1 东北航校.jpg')";
+        document.getElementById('imageContainer').style.display = 'none';
+        backgroundImage.style.zIndex = '0'; // 显示背景图
+    });
+
+    // 点击返回按钮，回到第一张图
+    document.getElementById('backButton').addEventListener('click', function () {
+        document.getElementById('imageContainer').style.display = 'block';
+        document.getElementById('backgroundImage').style.backgroundImage = '';
+        document.getElementById('backgroundImage').style.zIndex = '-1'; // 隐藏背景图
+    });
+
+    // 点击第二张图的光点显示卡片
+    document.getElementById('secondHighlight').addEventListener('click', function () {
+        document.getElementById('cardPopup').style.display = 'block';
+    });
+
+    // 关闭卡片弹出框
+    document.getElementById('closeCard').addEventListener('click', function () {
+        document.getElementById('cardPopup').style.display = 'none';
+    });
+
+    // 页面加载时自动滚动到顶部
+    window.addEventListener('load', function () {
+        const container = document.getElementById('imageContainer');
+        container.scrollTop = container.scrollHeight; // 确保图片从顶部显示
+    });
+
+    // 页面加载和窗口变化时调整光点位置
+    window.addEventListener('load', adjustHighlightPosition);
+    window.addEventListener('resize', adjustHighlightPosition);
+        // 获取音频元素
+        const audio = document.getElementById('backgroundMusic');
+    const musicIcon = document.getElementById('musicIcon');
+
+    // 点击音乐图标播放或暂停音乐
+    musicIcon.addEventListener('click', function() {
+        if (audio.paused) {
+            audio.play().then(() => {
+                console.log('音乐播放');
+            }).catch(error => {
+                console.log('播放失败：', error);
+            });
+        } else {
+            audio.pause();
+            console.log('音乐暂停');
+        }
+    });
+    // 在页面加载时自动播放音频
+    window.addEventListener('load', function () {
+        const audio = document.getElementById('backgroundMusic');
+        audio.play().catch(function(error) {
+            console.log('自动播放失败，用户需要手动启动音频:', error);
+        });
+    });
+    // 确保图片加载后调整光点位置
+    document.getElementById('image').addEventListener('load', adjustHighlightPosition);
+</script>
+
+</body>
+</html>
