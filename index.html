@@ -29,200 +29,418 @@
             height: auto;
             margin: 0;
         }
+        
         .music-icon {
-            transform: rotate(-90deg);
+            transform: rotate(90deg);
             width: 30px;  /* 缩小图标尺寸 */
             height: 30px; /* 缩小图标尺寸 */
             position: fixed; /* 使其固定在屏幕上 */
-            top: 20px;
-            left: 20px;
+            bottom: 20px;
+            right: 20px;
             cursor: pointer;
             z-index: 999; /* 保证它显示在最上层 */
         }
-        .highlight {
-            width: 50px;
-            height: 50px;
-            background: radial-gradient(circle, rgba(255, 255, 150, 0.2) 30%, rgba(255, 255, 100, 0.6) 50%, rgba(255, 255, 255, 0.5) 80%);
+        
+        .highlight, .highlight-main, .highlight-secondary {
+            width: 60px;
+            height: 60px;
             position: absolute;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
+            background: radial-gradient(circle at center, white, yellow); /* Gradient from white to yellow */
+            clip-path: polygon(
+                50% 0%,
+                61% 35%,
+                98% 35%,
+                68% 57%,
+                79% 91%,
+                50% 70%,
+                21% 91%,
+                32% 57%,
+                2% 35%,
+                39% 35%
+            ); /* Creating a star shape */
+            box-shadow: 0 0 30px 15px rgba(255, 255, 150, 0.8); /* Glowing effect */
+            animation: pulse 3s infinite ease-in-out; /* Smoother transition */
             cursor: pointer;
         }
 
         @keyframes pulse {
             0% {
-                transform: scale(1);
-                opacity: 1;
+                transform: scale(0.8);
+                opacity: 0; /* Fully transparent */
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1; /* Fully opaque */
             }
             100% {
-                transform: scale(1.5);
-                opacity: 0;
+                transform: scale(0.8);
+                opacity: 0; /* Fully transparent */
             }
         }
 
         .background-image {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
+            background-repeat: no-repeat;
+            background-position: center;
             z-index: -1;
-        }
-
-        /* 卡片框旋转 -90 度 */
-        .card-popup {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-90deg); /* 旋转卡片 */
-            width: 500px;
-            display: none;
-            z-index: 100;
-        }
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-title {
-            text-align: center;
-            flex-grow: 1;
-            margin: 0;
-        }
-
-        .close-button {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #333;
-            cursor: pointer;
         }
 
         /* 返回按钮旋转并放置在屏幕底部 */
         .back-button {
             position: absolute;
-            bottom: 20px;
-            left: 20px;
+            top: 10px;
+            right: 2px;
             z-index: 100;
-            transform: rotate(-90deg); /* 按钮旋转 */
+            transform: rotate(90deg); /* 按钮旋转 */
             transform-origin: center;
+            display: none; /* 默认隐藏，只有在第二层时显示 */
+        }
+
+        /* 取消按钮 */
+        .cancel-button {
+            position: fixed;
+            width: 35px;
+            height: 35px;
+            top: 10px;
+            right: 10px;
+            z-index: 101;
+            cursor: pointer;
+            display: none; /* 默认隐藏，只有在第三层时显示 */
         }
     </style>
 </head>
 <body>
 
-<!-- 第一张图片容器 -->
 <div class="image-container" id="imageContainer">
-    <img src="./assets/空军节压缩.jpg" alt="竖屏长图" id="image">
-    <div class="highlight" id="highlight"></div>
+    <img src="./assets/image/空军节.jpg" alt="竖屏长图" id="image">
+    <div class="highlight highlight-main" id="highlight"></div>
+    <div class="highlight highlight-main" id="highlight2"></div>
+    <div class="highlight highlight-main" id="highlight3"></div>
+    <div class="highlight highlight-main" id="highlight4"></div>
+    <div class="highlight highlight-main" id="highlight5"></div>
+    <div class="highlight highlight-main" id="highlight6"></div>
 </div>
 
 <!-- 音乐图标，固定在屏幕右上角 -->
-<img src="./assets/音乐.png" class="music-icon" id="musicIcon" alt="音乐图标">
+<img src="./assets/icon/音乐关闭.png" class="music-icon" id="musicIcon" alt="音乐图标">
 
 <!-- 音频播放器 -->
-<audio id="backgroundMusic" src="./assets/music/我的战鹰绕着宝岛飞 MMO(1).wav" type="audio/wav"></audio>
+<audio id="backgroundMusic" src="./assets/music/我爱祖国的蓝天.mp3" type="mp3"></audio>
+<audio id ="backgroundMusic2" src="./assets/music/宝岛.mp3" type="mp3"></audio>
 
-<!-- 背景图片容器（第二张图） -->
-<div class="background-image" id="backgroundImage">
-    <div class="highlight" id="secondHighlight" style="top: 50%; left: 50%;"></div>
+<!-- 背景图片容器 -->
+<div class="background-image" id="backgroundImage"></div>
 
-    <!-- 返回按钮 -->
-    <button class="btn btn-light back-button" id="backButton">返回</button>
+<!-- 返回按钮 -->
+<button class="btn btn-light back-button" id="backButton">返回</button>
 
-   <!-- 卡片弹出框 -->
-   <div class="card card-popup" id="cardPopup">
-    <div class="card-header">
-        <h5 class="card-title">马拉飞机建航校</h5>
-        <button class="close-button" id="closeCard">&times;</button>
-    </div>
-    <div class="card-body">
-        <p class="card-text">东北民主联军航空学校，又称“东北老航校”，是党创办的第一所航空学校，也是人民空军和新中国航空事业的“摇篮”。老航校诞生于烽火连天的解放战争时期，时时面临着敌对势力的骚扰破坏，办学条件非常艰苦。老航校创建者牢记党中央嘱托，怀着“千难万险何所惧，愿为航空献青春”的革命豪情，在冰天雪地里通过马拉人抬，搜集飞机航材、油料设备。</p>
-    </div>
-</div>
-</div>
+<!-- 取消按钮 -->
+<img src="./assets/icon/取消.png" class="cancel-button" id="cancelButton" alt="取消图标">
+
 <script>
-    // 调整光点的位置
-    function adjustHighlightPosition() {
-        const image = document.getElementById('image');
-        const highlight = document.getElementById('highlight');
+// 调整光点的位置
+function adjustHighlightPosition() {
+    const image = document.getElementById('image');
+    const highlights = [
+        document.getElementById('highlight'),
+        document.getElementById('highlight2'),
+        document.getElementById('highlight3'),
+        document.getElementById('highlight4'),
+        document.getElementById('highlight5'),
+        document.getElementById('highlight6')
+    ];
 
-        if (image.complete && image.naturalHeight !== 0) {
-            const imageRect = image.getBoundingClientRect();
+    const positions = [
+        { top: 0.054, left: 0.82 },
+        { top: 0.19, left: 0.65 },  // 第二个光点位置
+        { top: 0.55, left: 0.18 },  // 第三个光点位置
+        { top: 0.595, left: 0.5 },  // 第四个光点位置
+        { top: 0.82, left: 0.8 },   // 第五个光点位置
+        { top: 0.92, left: 0.34 }   // 第六个光点位置
+    ];
 
-            const topPercentage = 0.913;
-            const leftPercentage = 0.065;
+    if (image.complete && image.naturalHeight !== 0) {
+        const imageRect = image.getBoundingClientRect();
 
-            highlight.style.top = (imageRect.height * topPercentage) + 'px';
-            highlight.style.left = (imageRect.width * leftPercentage) + 'px';
-        }
+        highlights.forEach((highlight, index) => {
+            const { top, left } = positions[index];
+            highlight.style.top = (imageRect.height * top) + 'px';
+            highlight.style.left = (imageRect.width * left) + 'px';
+        });
+    }
+}
+
+// 获取音频元素
+const audio1 = document.getElementById('backgroundMusic');
+const audio2 = document.getElementById('backgroundMusic2');
+const musicIcon = document.getElementById('musicIcon');
+
+// 页面加载时，自动播放第一个音频，并设置图标为“音乐开启”
+window.addEventListener('load', function () {
+    playAudio(audio1);
+});
+
+// 播放音频并更新图标
+function playAudio(audio) {
+    audio.play().then(() => {
+        musicIcon.src = './assets/icon/音乐开启.png'; // 设置图标为“音乐开启”
+    }).catch(function(error) {
+        console.log('自动播放失败，用户需要手动启动音频:', error);
+        musicIcon.src = './assets/icon/音乐关闭.png'; // 设置图标为“音乐关闭”
+    });
+}
+
+// 暂停所有音频
+function pauseAllAudio() {
+    audio1.pause();
+    audio2.pause();
+}
+
+// 切换音乐函数
+function switchMusic(playAudio1) {
+    pauseAllAudio(); // 先暂停所有音频
+    if (playAudio1) {
+        playAudio(audio1);
+    } else {
+        playAudio(audio2);
+    }
+}
+
+// 点击音乐图标时，切换播放状态和图标
+musicIcon.addEventListener('click', function() {
+    if (audio1.paused && audio2.paused) {
+        playAudio(audio1); // 默认播放第一个音频
+    } else {
+        pauseAllAudio();
+        musicIcon.src = './assets/icon/音乐关闭.png'; // 音乐暂停时，显示“音乐关闭”图标
+        console.log('音乐暂停');
+    }
+});
+
+// 定义每张背景图中光点的位置信息和故事内容
+const backgroundData = {
+    '1 东北航校.jpg': {
+        highlights: [
+            { id: 'highlight1-1', top: '50%', left: '30%' }
+        ],
+        selectedImage: '东北航校-selected.jpg'
+    },
+    '2 甘巴拉.jpg': {
+        highlights: [
+            { id: 'highlight2-1', top: '60%', left: '40%' }
+        ],
+        selectedImage: '甘巴拉-selected.jpg'
+    },
+    '3 U2.jpg': {
+        highlights: [
+            { id: 'highlight3-1', top: '70%', left: '50%' }
+        ],
+        selectedImage: 'U2-selected.jpg'
+    },
+    '4 汶川.jpg': {
+        highlights: [
+            { id: 'highlight4-1', top: '80%', left: '20%' }
+        ],
+        selectedImage: '汶川-selected.jpg'
+    },
+    '6 J20.jpg': {
+        highlights: [
+            { id: 'highlight6-1', top: '40%', left: '60%' }
+        ],
+        selectedImage: 'J20-selected.jpg'
+    },
+    '5 Y20.jpg': {
+        highlights: [
+            { id: 'highlight5-1', top: '50%', left: '70%' }
+        ],
+        selectedImage: 'Y20-selected.jpg'
+    }
+};
+
+// 跟踪当前图片状态
+let currentLevel = 0; // 0: 长图, 1: 背景图, 2: selected 图
+
+// 切换背景图，并根据图片展示不同的光点
+function switchBackground(imageName) {
+    const backgroundImage = document.getElementById('backgroundImage');
+    const data = backgroundData[imageName];
+
+    if (!data) {
+        console.error(`未找到图片名称：${imageName}`);
+        return;
     }
 
-    // 切换到背景图
-    document.getElementById('highlight').addEventListener('click', function () {
-        const backgroundImage = document.getElementById('backgroundImage');
-        backgroundImage.style.backgroundImage = "url('./assets/1 东北航校.jpg')";
-        document.getElementById('imageContainer').style.display = 'none';
-        backgroundImage.style.zIndex = '0'; // 显示背景图
-    });
+    if (currentLevel === 0) {
+        console.log(`切换到背景图: ${imageName}`);
+        
+        // 从长图到背景图
+        backgroundImage.style.backgroundSize = 'cover';
+        backgroundImage.style.backgroundImage = `url('./assets/image/${imageName}')`;
+        currentLevel = 1;
 
-    // 点击返回按钮，回到第一张图
-    document.getElementById('backButton').addEventListener('click', function () {
-        document.getElementById('imageContainer').style.display = 'block';
-        document.getElementById('backgroundImage').style.backgroundImage = '';
-        document.getElementById('backgroundImage').style.zIndex = '-1'; // 隐藏背景图
-    });
+        // 显示返回按钮
+        document.getElementById('backButton').style.display = 'block';
 
-    // 点击第二张图的光点显示卡片
-    document.getElementById('secondHighlight').addEventListener('click', function () {
-        document.getElementById('cardPopup').style.display = 'block';
-    });
+        // 调整光点的位置并创建光点元素
+        data.highlights.forEach(highlight => {
+            let highlightElement = document.createElement('div');
+            highlightElement.classList.add('highlight', 'highlight-secondary');
+            highlightElement.id = highlight.id;
+            highlightElement.style.top = highlight.top;
+            highlightElement.style.left = highlight.left;
+            backgroundImage.appendChild(highlightElement);
 
-    // 关闭卡片弹出框
-    document.getElementById('closeCard').addEventListener('click', function () {
-        document.getElementById('cardPopup').style.display = 'none';
-    });
-
-    // 页面加载时自动滚动到顶部
-    window.addEventListener('load', function () {
-        const container = document.getElementById('imageContainer');
-        container.scrollTop = container.scrollHeight; // 确保图片从顶部显示
-    });
-
-    // 页面加载和窗口变化时调整光点位置
-    window.addEventListener('load', adjustHighlightPosition);
-    window.addEventListener('resize', adjustHighlightPosition);
-        // 获取音频元素
-        const audio = document.getElementById('backgroundMusic');
-    const musicIcon = document.getElementById('musicIcon');
-
-    // 点击音乐图标播放或暂停音乐
-    musicIcon.addEventListener('click', function() {
-        if (audio.paused) {
-            audio.play().then(() => {
-                console.log('音乐播放');
-            }).catch(error => {
-                console.log('播放失败：', error);
-            });
-        } else {
-            audio.pause();
-            console.log('音乐暂停');
-        }
-    });
-    // 在页面加载时自动播放音频
-    window.addEventListener('load', function () {
-        const audio = document.getElementById('backgroundMusic');
-        audio.play().catch(function(error) {
-            console.log('自动播放失败，用户需要手动启动音频:', error);
+            // 切换到 selected 图
+            highlightElement.onclick = () => switchSelectedImage(imageName);
         });
-    });
-    // 确保图片加载后调整光点位置
-    document.getElementById('image').addEventListener('load', adjustHighlightPosition);
-</script>
+    }
 
+    document.getElementById('imageContainer').style.display = 'none';
+    backgroundImage.style.zIndex = '0'; // 显示背景图
+
+    // 切换到宝岛音乐
+    switchMusic(false);
+}
+
+// 切换到 selected 图片
+function switchSelectedImage(imageName) {
+    console.log(`切换到 selected 图: ${imageName}`);
+
+    const backgroundImage = document.getElementById('backgroundImage');
+    const data = backgroundData[imageName];
+    
+    // 保存当前背景图，以便恢复
+    backgroundImage.dataset.previousImage = backgroundImage.style.backgroundImage;
+    backgroundImage.dataset.previousSize = backgroundImage.style.backgroundSize;
+
+    backgroundImage.style.backgroundSize = 'contain'; // 保证 selected 图片不被裁剪
+    backgroundImage.style.backgroundImage = `url('./assets/image-selected/${data.selectedImage}')`;
+    currentLevel = 2;
+
+    // 显示取消按钮
+    document.getElementById('cancelButton').style.display = 'block';
+
+    // 隐藏返回按钮和移除所有光点
+    document.getElementById('backButton').style.display = 'none';
+    document.querySelectorAll('.highlight-secondary').forEach(el => el.remove());
+
+    // 切换到宝岛音乐
+    switchMusic(false);
+}
+
+// 切换到不同的背景图
+document.getElementById('highlight').addEventListener('click', function () {
+    switchBackground('1 东北航校.jpg');
+});
+document.getElementById('highlight2').addEventListener('click', function () {
+    switchBackground('2 甘巴拉.jpg');
+});
+document.getElementById('highlight3').addEventListener('click', function () {
+    switchBackground('3 U2.jpg');
+});
+document.getElementById('highlight4').addEventListener('click', function () {
+    switchBackground('4 汶川.jpg');
+});
+document.getElementById('highlight5').addEventListener('click', function () {
+    switchBackground('6 J20.jpg');
+});
+document.getElementById('highlight6').addEventListener('click', function () {
+    switchBackground('5 Y20.jpg');
+});
+
+// 点击返回按钮，回到第一张图
+document.getElementById('backButton').addEventListener('click', function () {
+    console.log('点击返回按钮，回到长图');
+
+    document.getElementById('imageContainer').style.display = 'block';
+    document.getElementById('backgroundImage').style.backgroundImage = '';
+    document.getElementById('backgroundImage').style.zIndex = '-1'; // 隐藏背景图
+    currentLevel = 0; // 重置为初始状态
+
+    // 移除背景图上的所有光点
+    document.querySelectorAll('.highlight-secondary').forEach(el => el.remove());
+
+    // 返回到初始页面音乐
+    switchMusic(true);
+
+    // 隐藏返回按钮
+    document.getElementById('backButton').style.display = 'none';
+});
+
+// 点击取消按钮，回到第二张图
+document.getElementById('cancelButton').addEventListener('click', function () {
+    console.log('点击取消按钮，回到背景图');
+
+    if (currentLevel === 2) {
+        currentLevel = 1; // 重置为背景图状态
+
+        // 隐藏取消按钮
+        document.getElementById('cancelButton').style.display = 'none';
+
+        // 显示返回按钮
+        document.getElementById('backButton').style.display = 'block';
+
+        // 恢复背景图
+        const backgroundImage = document.getElementById('backgroundImage');
+        const previousImage = backgroundImage.dataset.previousImage;
+        const previousSize = backgroundImage.dataset.previousSize;
+
+        if (previousImage) {
+            backgroundImage.style.backgroundImage = previousImage;
+            backgroundImage.style.backgroundSize = previousSize;
+
+            // 当前背景图片的文件名（包括扩展名）
+            const imageNameMatch = previousImage.match(/\/([^\/]+\.jpg)["']?\)$/);
+            const imageName = imageNameMatch ? imageNameMatch[1] : '';
+
+            console.log(`恢复背景图: ${imageName}`);
+
+            if (imageName && backgroundData[imageName]) {
+                const data = backgroundData[imageName];
+
+                // 重新创建光点元素
+                data.highlights.forEach(highlight => {
+                    let highlightElement = document.createElement('div');
+                    highlightElement.classList.add('highlight', 'highlight-secondary');
+                    highlightElement.id = highlight.id;
+                    highlightElement.style.top = highlight.top;
+                    highlightElement.style.left = highlight.left;
+                    backgroundImage.appendChild(highlightElement);
+
+                    // 切换到 selected 图
+                    highlightElement.onclick = () => switchSelectedImage(imageName);
+                });
+
+                console.log('光点元素已重新创建');
+            } else {
+                console.error(`无法找到背景图数据: ${imageName}`);
+            }
+        } else {
+            console.error('没有找到 previousImage 数据');
+        }
+
+        // 切换到背景图音乐
+        switchMusic(false);
+    }
+});
+
+// 页面加载时自动滚动到顶部
+window.addEventListener('load', function () {
+    const container = document.getElementById('imageContainer');
+    container.scrollTop = 0; // 确保图片从顶部显示
+});
+
+// 页面加载和窗口变化时调整光点位置
+window.addEventListener('load', adjustHighlightPosition);
+window.addEventListener('resize', adjustHighlightPosition);
+
+// 确保图片加载后调整光点位置
+document.getElementById('image').addEventListener('load', adjustHighlightPosition);
+
+</script>
 </body>
 </html>
